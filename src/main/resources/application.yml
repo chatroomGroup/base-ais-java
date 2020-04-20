@@ -1,0 +1,7 @@
+server:
+  port: 30013
+
+
+spring:
+  profiles:
+    active: dev

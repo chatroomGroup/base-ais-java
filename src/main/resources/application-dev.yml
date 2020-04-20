@@ -1,0 +1,57 @@
+#jpa:
+#    properties:
+#      hibernate:
+#        hbm2ddl:
+#          auto: none
+#        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+#        format_sql: true
+#    show-sql: true
+#    enable: true
+#
+#datasources:
+#  instant-1:
+#      url: jdbc:mysql://47.102.222.185:30001/chatroom?autoReconnect=true&failOverReadOnly=false&useUnicode=true&characterEncoding=UTF-8&useSSL=false
+#      username: root
+#      password: 123
+#      driverClassName: com.mysql.jdbc.Driver
+#      initialSize: 5
+#      maxActive: 100
+#      maxIdle: 10
+#      minIdle: 5
+#      type: com.alibaba.druid.pool.DruidDataSource
+#      isDefault: true
+#
+#redis:
+#  host: 47.102.222.185
+#  port: 36379
+#  password: 123
+#  database: 1
+#  max-active: 200
+#  max-wait: -1
+#  max-idle: 8
+#  timeout: 0
+#  connectionPoolSize: 200
+#
+
+cache:
+  time: 1800
+
+mongo:
+  host: localhost
+  port: 27017
+  username:
+  password:
+  authenticationDatabase:
+  database: chatroom
+  isCredential: false
+  connectionPerHost: 100
+  TtlTime: 3
+
+ais.mq:
+  host: localhost # connection host
+  port: 5672 # 5772 # connection port
+  username: guest
+  password: guest
+  concurrency: 1
+  maxConcurrency: 1
+  virtualHost: /cr
