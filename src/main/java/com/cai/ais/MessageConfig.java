@@ -4,11 +4,11 @@ import com.rabbitmq.client.Channel;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.core.ChannelAwareMessageListener;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
+import org.springframework.amqp.rabbit.listener.api.ChannelAwareMessageListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -37,21 +37,21 @@ public class MessageConfig {
     @Autowired
     AisProperties aisProperties;
 
-    @Bean
-    ConnectionFactory connectionFactory(){
-        CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
-        connectionFactory.setUsername(aisProperties.getUsername());
-        connectionFactory.setPassword(aisProperties.getPassword());
-        connectionFactory.setVirtualHost(aisProperties.getVirtualHost());
-        connectionFactory.setHost(aisProperties.getHost());
-        connectionFactory.setPort(aisProperties.getPort());
-        return connectionFactory;
-    }
+//    @Bean
+//    ConnectionFactory connectionFactory(){
+//        CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
+//        connectionFactory.setUsername(aisProperties.getUsername());
+//        connectionFactory.setPassword(aisProperties.getPassword());
+//        connectionFactory.setVirtualHost(aisProperties.getVirtualHost());
+//        connectionFactory.setHost(aisProperties.getHost());
+//        connectionFactory.setPort(aisProperties.getPort());
+//        return connectionFactory;
+//    }
 
-    @Bean
-    RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory){
-        return new RabbitTemplate(connectionFactory);
-    }
+//    @Bean
+//    RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory){
+//        return new RabbitTemplate(connectionFactory);
+//    }
     @Bean(name = "rabbitAdmin")
     RabbitAdmin rabbitAdmin(@Qualifier("connectionFactory") ConnectionFactory myConnectionFactory){
         try{
