@@ -1,9 +1,8 @@
 package com.cai.ais.v1_1.core.client;
 
-import com.cai.ais.AisService;
+import com.cai.ais.v1_1.AisService;
 import com.cai.ais.v1_1.annotation.ConsumerListener;
 import com.cai.ais.v1_1.annotation.FanoutConsumerListener;
-import org.apache.http.util.Asserts;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
@@ -12,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import java.text.MessageFormat;
 import java.util.Map;
@@ -39,7 +39,7 @@ public class ConsumerListenerBeanProcessor implements BeanPostProcessor {
                 if(bean.getClass().isAnnotationPresent(ConsumerListener.class)){
                     ConsumerListener listener = bean.getClass().getAnnotation(ConsumerListener.class);
                     Map values = AnnotationUtils.getAnnotationAttributes(ConsumerListener.class,listener);
-                    declareAndBind((String) values.get("queue"), bean);
+                    declareAndBind((String) values.get("queue"), (String) values.get("exchangeName"), bean);
                 }
             }
         }
@@ -48,9 +48,9 @@ public class ConsumerListenerBeanProcessor implements BeanPostProcessor {
 
 
     private void checkAndThrowCoexist(boolean result){
-        Asserts.check(
-                result
-                ,MessageFormat.format("{0} and {1} Cannot coexist"
+        Assert.isTrue(
+                !result
+                ,MessageFormat.format("{0} and {1} cannot coexist"
                         , ConsumerListener.class.getName()
                         ,FanoutConsumerListener.class.getName()
                 ));
@@ -60,10 +60,14 @@ public class ConsumerListenerBeanProcessor implements BeanPostProcessor {
     private void declareAndBind(String queueName, String exchangeName, Object o){
         String exchangeNameN = exchangeName;
         if (exchangeNameN == null)
-            exchangeName = "com.generate.direct";
+            exchangeName = "com.generate.fanout";
+        if (queueName.equals("")){
+            queueName = QueueBuilder.durable().build().getName();
+        }
         Queue queue = QueueBuilder.durable(queueName).autoDelete().build();
         Exchange exchange = ExchangeBuilder.fanoutExchange(exchangeName).autoDelete().build();
         amqpAdmin.declareQueue(queue);
+        amqpAdmin.declareExchange(exchange);
         amqpAdmin.declareBinding(BindingBuilder
                 .bind(queue)
                 .to(exchange)

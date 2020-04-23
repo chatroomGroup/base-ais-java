@@ -36,11 +36,11 @@ public class AisConfiguration {
     RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory){
         return new RabbitTemplate(connectionFactory);
     }
-
-    @Bean
-    AmqpAdmin amqpAdmin(@Qualifier("connectionFactory") ConnectionFactory connectionFactory){
-        return new RabbitAdmin(connectionFactory);
-    }
+//
+//    @Bean
+//    AmqpAdmin amqpAdmin(@Qualifier("connectionFactory") ConnectionFactory connectionFactory){
+//        return new RabbitAdmin(connectionFactory);
+//    }
 
 
 

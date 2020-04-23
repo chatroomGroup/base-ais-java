@@ -9,7 +9,8 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Component
 public @interface ConsumerListener {
+
     String queue() default "";
 
-    String exchangeName() default "com.generate.direct";
+    String exchangeName() default "com.generate.fanout";
 }
