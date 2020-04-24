@@ -1,4 +1,4 @@
-package com.cai.ais.v1_1.annotation;
+package com.cai.ais.annotation;
 
 import org.springframework.amqp.core.ExchangeTypes;
 import org.springframework.stereotype.Component;

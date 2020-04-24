@@ -11,51 +11,51 @@ public class AisMessage<T> implements Serializable {
     private String msgTo;
     private Map<String,Object> params;
 
-    Long getId() {
+    public Long getId() {
         return id;
     }
 
-    void setId(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    String getQueue() {
+    public String getQueue() {
         return queue;
     }
 
-    void setQueue(String queue) {
+    public void setQueue(String queue) {
         this.queue = queue;
     }
 
-    T getBody() {
+    public T getBody() {
         return body;
     }
 
-    void setBody(T body) {
+    public void setBody(T body) {
         this.body = body;
     }
 
-    String getMsgFrom() {
+    public String getMsgFrom() {
         return msgFrom;
     }
 
-    void setMsgFrom(String msgFrom) {
+    public void setMsgFrom(String msgFrom) {
         this.msgFrom = msgFrom;
     }
 
-    String getMsgTo() {
+    public String getMsgTo() {
         return msgTo;
     }
 
-    void setMsgTo(String msgTo) {
+    public void setMsgTo(String msgTo) {
         this.msgTo = msgTo;
     }
 
-    Map<String, Object> getParams() {
+    public Map<String, Object> getParams() {
         return params;
     }
 
-    void setParams(Map<String, Object> params) {
+    public void setParams(Map<String, Object> params) {
         this.params = params;
     }
 }

@@ -1,7 +1,5 @@
-package com.cai.ais.v1_1.annotation;
+package com.cai.ais.annotation;
 
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.*;

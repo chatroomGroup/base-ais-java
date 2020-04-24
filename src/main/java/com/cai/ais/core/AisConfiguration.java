@@ -1,13 +1,12 @@
-package com.cai.ais.v1_1.core;
+package com.cai.ais.core;
 
 import com.cai.ais.AisProperties;
-import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.amqp.support.converter.SimpleMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,6 +41,10 @@ public class AisConfiguration {
 //        return new RabbitAdmin(connectionFactory);
 //    }
 
+    @Bean
+    MessageConverter messageConverter(){
+        return new SimpleMessageConverter();
+    }
 
 
 }

@@ -1,4 +1,4 @@
-package com.cai.ais.v1_1.annotation;
+package com.cai.ais.annotation;
 
 import org.springframework.stereotype.Component;
 
@@ -8,9 +8,11 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Component
-public @interface ConsumerListener {
+public @interface TopicConsumerListener {
 
     String queue() default "";
 
-    String exchangeName() default "com.generate.fanout";
+    String exchangeName() default "com.generate.topic";
+
+    String routeKey() default "";
 }

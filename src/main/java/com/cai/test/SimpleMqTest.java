@@ -1,7 +1,8 @@
 package com.cai.test;
 
 import com.cai.ChatroomBusinessApplication;
-import com.cai.ais.v1_1.core.send.AisSend;
+import com.cai.ais.AisMessage;
+import com.cai.ais.core.send.AisSend;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,17 @@ public class SimpleMqTest {
     AisSend aisSend;
 
     @Test
-    public void mqTest(){
-        aisSend.send("hhh","com.generate.fanout");
+    public void fanoutTest(){
+        AisMessage message = new AisMessage<String>();
+        message.setBody("123");
+        aisSend.send(message,"com.generate.fanout");
+    }
+
+    @Test
+    public void topicTest(){
+        AisMessage message = new AisMessage<String>();
+        message.setBody("topic123 ");
+        aisSend.send(message,"com.generate.topic","erp.log.error");
     }
 
 }
