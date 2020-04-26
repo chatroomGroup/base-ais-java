@@ -1,6 +1,6 @@
 package com.cai.test;
 
-import com.cai.ChatroomBusinessApplication;
+import com.cai.Application;
 import com.cai.ais.AisMessage;
 import com.cai.ais.core.send.AisSend;
 import org.junit.Test;
@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@SpringBootTest(classes = {ChatroomBusinessApplication.class})
+@SpringBootTest(classes = {Application.class})
 @RunWith(SpringJUnit4ClassRunner.class)
 public class SimpleMqTest {
 
@@ -27,7 +27,7 @@ public class SimpleMqTest {
     public void topicTest(){
         AisMessage message = new AisMessage<String>();
         message.setBody("topic123 ");
-        aisSend.send(message,"com.generate.topic","erp.log.error");
+        aisSend.send(message,"com.customer.topic","erp.log.error");
     }
 
 }
