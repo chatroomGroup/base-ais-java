@@ -25,7 +25,7 @@ ais.mq:
   maxConcurrency: 1
   virtualHost: /cr
   ``` 
-  此外，exchange使用的**autoDelete = true**，采用持久化的策略。queue采用用完随机删除的策略。支持广播(Fanout),路由(Topic)的消息投送方式。
+  此外，exchange使用的**autoDelete = true**，采用持久化的策略。queue采用用完即删的策略。支持广播(Fanout),路由(Topic)的消息投送方式。
   采用异步的监听策略，用法十分简便。
 ## 用法
   ### v1.1 and relases
