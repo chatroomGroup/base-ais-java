@@ -1,9 +1,11 @@
 package com.cai.ais.core;
 
 import com.cai.ais.AisProperties;
+import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.amqp.support.converter.SimpleMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,13 +35,21 @@ public class AisConfiguration {
 
     @Bean
     RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory){
-        return new RabbitTemplate(connectionFactory);
+        RabbitTemplate template = new RabbitTemplate(connectionFactory);
+        template.setReplyTimeout(10000);
+        template.setUseDirectReplyToContainer(false);
+        return template;
     }
 //
 //    @Bean
 //    AmqpAdmin amqpAdmin(@Qualifier("connectionFactory") ConnectionFactory connectionFactory){
 //        return new RabbitAdmin(connectionFactory);
 //    }
+
+    @Bean
+    public DirectExchange ex() {
+        return new DirectExchange("ex");
+    }
 
     @Bean
     MessageConverter messageConverter(){

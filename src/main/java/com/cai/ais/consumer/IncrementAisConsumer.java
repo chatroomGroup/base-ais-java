@@ -6,11 +6,12 @@ import com.cai.ais.annotation.ConsumerListener;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-@ConsumerListener()
+@ConsumerListener(queue = "test.001")
 public class IncrementAisConsumer extends AisService<AisMessage<String>> {
     static AtomicInteger v = new AtomicInteger(1);
     @Override
-    public void process(AisMessage<String> msg) {
+    public Object process(AisMessage<String> msg) {
         System.out.println(msg.getBody()+v.incrementAndGet());
+        return String.valueOf(msg.getBody()+v.incrementAndGet());
     }
 }

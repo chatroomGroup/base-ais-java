@@ -85,12 +85,12 @@ public class ConsumerListenerBeanProcessor implements BeanPostProcessor {
     private void declareAndBind(String queueName, String exchangeName, Object o) throws AisException {
         String exchangeNameN = exchangeName;
         if (exchangeNameN == null)
-            exchangeName = "com.generate.fanout";
+            exchangeNameN = "com.generate.fanout";
         if (queueName.equals("")){
             queueName = QueueBuilder.nonDurable().build().getName();
         }
         Queue queue = QueueBuilder.nonDurable(queueName).autoDelete().build();
-        Exchange exchange = AisData.addAndReturnExchange(exchangeName,amqpAdmin,MessageExchangeType.FANOUT);
+        Exchange exchange = AisData.addAndReturnExchange(exchangeNameN,amqpAdmin,MessageExchangeType.FANOUT);
         amqpAdmin.declareQueue(queue);
         amqpAdmin.declareBinding(BindingBuilder
                 .bind(queue)
@@ -106,12 +106,12 @@ public class ConsumerListenerBeanProcessor implements BeanPostProcessor {
     private void declareAndBind(String queueName, String exchangeName, String routeKey, Object o) throws AisException {
         String exchangeNameN = exchangeName;
         if (exchangeNameN == null)
-            exchangeName = "com.generate.topic";
+            exchangeNameN = "com.generate.topic";
         if (queueName.equals("")){
             queueName = QueueBuilder.nonDurable().build().getName();
         }
         Queue queue = QueueBuilder.nonDurable(queueName).autoDelete().build();
-        Exchange exchange = AisData.addAndReturnExchange(exchangeName,amqpAdmin,MessageExchangeType.TOPIC);
+        Exchange exchange = AisData.addAndReturnExchange(exchangeNameN,amqpAdmin,MessageExchangeType.TOPIC);
         amqpAdmin.declareQueue(queue);
         amqpAdmin.declareBinding(BindingBuilder
                 .bind(queue)

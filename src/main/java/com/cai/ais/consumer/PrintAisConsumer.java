@@ -4,11 +4,12 @@ import com.cai.ais.AisMessage;
 import com.cai.ais.AisService;
 import com.cai.ais.annotation.ConsumerListener;
 
-@ConsumerListener
+@ConsumerListener(queue = "test.002")
 public class PrintAisConsumer extends AisService<AisMessage<String>> {
 
     @Override
-    public void process(AisMessage msg) {
+    public Object process(AisMessage msg) {
         System.out.println(msg.getBody());
+        return msg.getBody();
     }
 }

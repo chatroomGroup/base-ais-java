@@ -8,7 +8,8 @@ import com.cai.ais.annotation.TopicConsumerListener;
 public class TopicPrint2Consumer extends AisService<AisMessage> {
 
     @Override
-    public void process(AisMessage msg) {
+    public Object process(AisMessage msg) {
         System.out.println("erp" + msg.getBody());
+        return null;
     }
 }
