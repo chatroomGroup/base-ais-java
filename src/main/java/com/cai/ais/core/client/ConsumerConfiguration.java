@@ -47,6 +47,7 @@ public class ConsumerConfiguration {
     @Autowired
     AisProperties aisProperties;
 
+    static String CONSUMER_METHOD_NAME = "process";
     @Bean
     public SimpleMessageListenerContainer listenerContainer(MessageListenerAdapter listenerAdapter) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
@@ -62,7 +63,7 @@ public class ConsumerConfiguration {
                 AisService ais = (AisService) queueToObject.get(message.getMessageProperties().getConsumerQueue());
                 log.info(MessageFormat.format("exchange: [ {0} ,routeKey: {1} ] is executing",message.getMessageProperties().getReceivedExchange(),message.getMessageProperties().getReceivedRoutingKey()));
                 listenerAdapter.setDelegate(ais);
-                listenerAdapter.setDefaultListenerMethod("process");
+                listenerAdapter.setDefaultListenerMethod(CONSUMER_METHOD_NAME);
                 listenerAdapter.onMessage(message, channel);
             }
         });
