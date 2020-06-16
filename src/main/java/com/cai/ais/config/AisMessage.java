@@ -1,4 +1,4 @@
-package com.cai.ais;
+package com.cai.ais.config;
 
 import java.io.Serializable;
 import java.util.Map;

@@ -1,6 +1,6 @@
 package com.cai.ais.core;
 
-import com.cai.ais.MessageExchangeType;
+import com.cai.ais.config.MessageExchangeType;
 import com.cai.ais.core.exception.AisException;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Exchange;

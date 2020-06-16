@@ -1,4 +1,4 @@
-package com.cai;
+package com.cai.ais;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

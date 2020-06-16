@@ -1,7 +1,7 @@
 package com.cai.ais.consumer;
 
-import com.cai.ais.AisMessage;
-import com.cai.ais.AisService;
+import com.cai.ais.config.AisMessage;
+import com.cai.ais.config.AisService;
 import com.cai.ais.annotation.ConsumerListener;
 
 import java.util.concurrent.atomic.AtomicInteger;

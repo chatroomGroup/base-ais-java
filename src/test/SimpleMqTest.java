@@ -1,17 +1,15 @@
-package com.cai.test;
+package com.cai.ais.test;
 
-import com.cai.Application;
+import com.cai.ais.Application;
 import com.cai.ais.AisMessage;
 import com.cai.ais.core.send.AisSend;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.rabbit.AsyncRabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.util.concurrent.ListenableFutureCallback;
 
 @SpringBootTest(classes = {Application.class})
 @RunWith(SpringJUnit4ClassRunner.class)

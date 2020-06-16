@@ -1,7 +1,7 @@
 package com.cai.ais.core.client;
 
-import com.cai.ais.AisService;
-import com.cai.ais.MessageExchangeType;
+import com.cai.ais.config.AisService;
+import com.cai.ais.config.MessageExchangeType;
 import com.cai.ais.annotation.ConsumerListener;
 import com.cai.ais.annotation.FanoutConsumerListener;
 import com.cai.ais.annotation.TopicConsumerListener;
