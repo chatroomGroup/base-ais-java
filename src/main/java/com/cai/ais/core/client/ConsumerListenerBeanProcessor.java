@@ -35,7 +35,7 @@ public class ConsumerListenerBeanProcessor implements BeanPostProcessor {
     RabbitAdmin amqpAdmin;
 
     @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         try {
             if (bean.getClass().isAnnotationPresent(ConsumerListener.class)
                     || bean.getClass().isAnnotationPresent(FanoutConsumerListener.class)
