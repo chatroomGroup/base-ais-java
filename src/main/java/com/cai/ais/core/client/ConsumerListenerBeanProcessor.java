@@ -1,6 +1,8 @@
 package com.cai.ais.core.client;
 
+import com.cai.ais.config.AisProperties;
 import com.cai.ais.config.AisService;
+import com.cai.ais.config.MessageContainerRegistrar;
 import com.cai.ais.config.MessageExchangeType;
 import com.cai.ais.annotation.ConsumerListener;
 import com.cai.ais.annotation.FanoutConsumerListener;
@@ -8,8 +10,11 @@ import com.cai.ais.annotation.TopicConsumerListener;
 import com.cai.ais.core.AisData;
 import com.cai.ais.core.exception.AisException;
 import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -17,6 +22,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+import javax.annotation.PostConstruct;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,10 +35,22 @@ public class ConsumerListenerBeanProcessor implements BeanPostProcessor {
     ConsumerConfiguration consumerConfig;
 
     @Autowired
-    SimpleMessageListenerContainer listenerContainer;
+    RabbitAdmin amqpAdmin;
 
     @Autowired
-    RabbitAdmin amqpAdmin;
+    AisProperties aisProperties;
+
+    @Autowired
+    ConnectionFactory connectionFactory;
+
+    @Autowired
+    MessageListenerAdapter messageListenerAdapter;
+
+    @Autowired
+    MessageContainerRegistrar messageContainerRegistrar;
+
+    @Autowired
+    SimpleMessageListenerContainer listenerContainer;
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
@@ -84,12 +102,15 @@ public class ConsumerListenerBeanProcessor implements BeanPostProcessor {
     //fanout
     private void declareAndBind(String queueName, String exchangeName, Object o) throws AisException {
         String exchangeNameN = exchangeName;
+        Queue queue;
         if (exchangeNameN == null)
             exchangeNameN = "com.generate.fanout";
         if (queueName.equals("")){
             queueName = QueueBuilder.nonDurable().build().getName();
+            queue = QueueBuilder.nonDurable(queueName).autoDelete().build();
+        }else{
+            queue = QueueBuilder.durable(queueName).build();
         }
-        Queue queue = QueueBuilder.nonDurable(queueName).autoDelete().build();
         Exchange exchange = AisData.addAndReturnExchange(exchangeNameN,amqpAdmin,MessageExchangeType.FANOUT);
         amqpAdmin.declareQueue(queue);
         amqpAdmin.declareBinding(BindingBuilder
@@ -98,20 +119,29 @@ public class ConsumerListenerBeanProcessor implements BeanPostProcessor {
                 .with("")
                 .noargs()
         );
-        addQueueNames(queueName);
         addQueueToObjectItem(queueName, o);
     }
 
     //topic
     private void declareAndBind(String queueName, String exchangeName, String routeKey, Object o) throws AisException {
         String exchangeNameN = exchangeName;
+        Queue queue;
         if (exchangeNameN == null)
             exchangeNameN = "com.generate.topic";
         if (queueName.equals("")){
             queueName = QueueBuilder.nonDurable().build().getName();
+            queue = QueueBuilder.nonDurable(queueName).autoDelete().build();
+        }else{
+            queue = QueueBuilder.durable(queueName).build();
         }
-        Queue queue = QueueBuilder.nonDurable(queueName).autoDelete().build();
         Exchange exchange = AisData.addAndReturnExchange(exchangeNameN,amqpAdmin,MessageExchangeType.TOPIC);
+        addQueueToObjectItem(queueName, o);
+        if (aisProperties.getQueueConcurrency().containsKey(queueName)){
+            int concurrentConsumers = Math.toIntExact(aisProperties.getQueueConcurrency().get(queueName));
+            int maxConcurrentConsumers = Math.toIntExact(aisProperties.getQueueConcurrency().get(queueName));
+            messageContainerRegistrar.register(queue, exchangeName, routeKey , concurrentConsumers, maxConcurrentConsumers , connectionFactory, messageListenerAdapter, consumerConfig.getQueueToObject());
+            return;
+        }
         amqpAdmin.declareQueue(queue);
         amqpAdmin.declareBinding(BindingBuilder
                 .bind(queue)
@@ -120,7 +150,6 @@ public class ConsumerListenerBeanProcessor implements BeanPostProcessor {
                 .noargs()
         );
         addQueueNames(queueName);
-        addQueueToObjectItem(queueName, o);
     }
 
     private void declareAndBind(String queueName, Object o){
@@ -137,6 +166,14 @@ public class ConsumerListenerBeanProcessor implements BeanPostProcessor {
      * @param queueName
      */
     private void addQueueNames(String queueName){
+        listenerContainer.addQueueNames(queueName);
+    }
+
+    /**
+     * 监听容器增加队列 name
+     * @param queueName
+     */
+    private void addQueueNames(SimpleMessageListenerContainer listenerContainer, String queueName){
         listenerContainer.addQueueNames(queueName);
     }
 

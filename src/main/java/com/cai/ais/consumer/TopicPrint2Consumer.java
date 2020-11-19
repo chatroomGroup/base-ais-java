@@ -4,7 +4,7 @@ import com.cai.ais.config.AisMessage;
 import com.cai.ais.config.AisService;
 import com.cai.ais.annotation.TopicConsumerListener;
 
-@TopicConsumerListener(routeKey = "erp.log.#", exchangeName = "com.customer.topic")
+@TopicConsumerListener(queue = "com.cai.print2",routeKey = "erp.log.#", exchangeName = "com.customer.topic")
 public class TopicPrint2Consumer extends AisService<AisMessage> {
 
     @Override

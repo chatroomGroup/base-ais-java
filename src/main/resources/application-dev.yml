@@ -48,10 +48,13 @@ mongo:
   TtlTime: 3
 
 ais.mq:
-  host: localhost # connection host
-  port: 5672 # 5772 # connection port
-  username: guest
-  password: guest
+  host: 47.102.222.185 # connection host
+  port: 35672 # 5772 # connection port
+  username: root
+  password: 123
   concurrency: 1
   maxConcurrency: 1
   virtualHost: /cr
+  queueConcurrency:
+    'com.cai.print1': 5
+    'com.cai.print2': 5

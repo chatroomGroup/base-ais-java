@@ -3,6 +3,9 @@ package com.cai.ais.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Map;
+
 @Component
 @ConfigurationProperties(prefix = "ais.mq")
 public class AisProperties {
@@ -14,6 +17,7 @@ public class AisProperties {
     private int concurrency;
     private int maxConcurrency;
     private boolean listen;
+    private Map<String, Long> queueConcurrency;
 
     public String getHost() {
         return host;
@@ -77,5 +81,13 @@ public class AisProperties {
 
     public void setListen(boolean listen) {
         this.listen = listen;
+    }
+
+    public Map<String, Long> getQueueConcurrency() {
+        return queueConcurrency;
+    }
+
+    public void setQueueConcurrency(Map<String, Long> queueConcurrency) {
+        this.queueConcurrency = queueConcurrency;
     }
 }

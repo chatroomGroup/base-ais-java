@@ -52,6 +52,7 @@ public class ConsumerConfiguration {
         container.setDefaultRequeueRejected(false);
         container.setAcknowledgeMode(AcknowledgeMode.AUTO);
         container.setReceiveTimeout(10000);
+        container.setPrefetchCount(1);
         container.setMessageListener(new ChannelAwareMessageListener() {
             @Override
             public void onMessage(Message message, Channel channel) throws Exception {
@@ -97,5 +98,9 @@ public class ConsumerConfiguration {
 
     public void addQueueToObjectItem(String queueName, Object o) {
         this.queueToObject.putIfAbsent(queueName,o);
+    }
+
+    public ConcurrentMap<String, Object> getQueueToObject() {
+        return queueToObject;
     }
 }
