@@ -58,10 +58,11 @@ public class ConsumerListenerBeanProcessor implements BeanPostProcessor {
                     }
                 }
             }
+            return bean;
         }catch (Throwable t){
             t.printStackTrace();
         }
-        return null;
+        return bean;
     }
 
 
