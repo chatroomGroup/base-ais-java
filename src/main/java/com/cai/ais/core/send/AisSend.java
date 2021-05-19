@@ -33,4 +33,17 @@ public class AisSend {
                 }
         );
     }
+
+    public Object sendAndReceive(AisMessage message, String exchangeName, String queueName){
+        return rabbitTemplate.convertSendAndReceive(exchangeName
+                , queueName
+                , message
+                , message1 -> {
+//                    message1.getMessageProperties().setReplyTo("amq.rabbitmq.reply-to");
+                    message1.getMessageProperties().setCorrelationId(UUID.randomUUID().toString()
+                    );
+                    return message1;
+                }
+        );
+    }
 }
