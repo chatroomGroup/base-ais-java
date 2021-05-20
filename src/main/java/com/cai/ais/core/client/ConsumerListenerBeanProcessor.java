@@ -1,5 +1,6 @@
 package com.cai.ais.core.client;
 
+import com.cai.ais.config.AisProperties;
 import com.cai.ais.config.AisService;
 import com.cai.ais.config.MessageExchangeType;
 import com.cai.ais.annotation.ConsumerListener;
@@ -34,9 +35,13 @@ public class ConsumerListenerBeanProcessor implements BeanPostProcessor {
     @Autowired
     RabbitAdmin amqpAdmin;
 
+    @Autowired
+    AisProperties aisProperties;
+
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         try {
+
             if (bean.getClass().isAnnotationPresent(ConsumerListener.class)
                     || bean.getClass().isAnnotationPresent(FanoutConsumerListener.class)
                     || bean.getClass().isAnnotationPresent(TopicConsumerListener.class)){
@@ -50,10 +55,20 @@ public class ConsumerListenerBeanProcessor implements BeanPostProcessor {
                     if(bean.getClass().isAnnotationPresent(ConsumerListener.class)){
                         ConsumerListener listener = bean.getClass().getAnnotation(ConsumerListener.class);
                         Map values = AnnotationUtils.getAnnotationAttributes(ConsumerListener.class,listener);
+                        if(aisProperties.getAloneQueue().containsKey((String) values.get("queue"))){
+                            addQueueNames((String) values.get("queue"));
+                            addQueueToObjectItem((String) values.get("queue"), bean);
+                            return bean;
+                        }
                         declareAndBind((String) values.get("queue"), (String) values.get("exchangeName"), bean);
                     }else if (bean.getClass().isAnnotationPresent(TopicConsumerListener.class)){
                         TopicConsumerListener listener = bean.getClass().getAnnotation(TopicConsumerListener.class);
                         Map values = AnnotationUtils.getAnnotationAttributes(TopicConsumerListener.class,listener);
+                        if(aisProperties.getAloneQueue().containsKey((String) values.get("queue"))){
+                            addQueueNames((String) values.get("queue"));
+                            addQueueToObjectItem((String) values.get("queue"), bean);
+                            return bean;
+                        }
                         declareAndBind((String) values.get("queue"), (String) values.get("exchangeName"), (String) values.get("routeKey"), bean);
                     }
                 }

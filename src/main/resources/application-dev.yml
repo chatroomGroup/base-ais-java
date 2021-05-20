@@ -52,6 +52,9 @@ ais.mq:
   port: 5672 # 5772 # connection port
   username: guest
   password: guest
-  concurrency: 1
-  maxConcurrency: 1
-  virtualHost: /cr
+  concurrency: 10
+  maxConcurrency: 10
+  virtualHost: /alone
+  aloneQueue:
+    'com.cai.alone.queue': 10
+    'com.cai.alone.queue2': 5
