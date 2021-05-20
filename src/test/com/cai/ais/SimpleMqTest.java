@@ -3,10 +3,7 @@ package com.cai.ais;
 import com.cai.ais.AisApplication;
 import com.cai.ais.config.AisMessage;
 import com.cai.ais.core.send.AisSend;
-import com.rabbitmq.client.BuiltinExchangeType;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.*;
 import com.rabbitmq.client.impl.ChannelN;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,10 +17,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.MessageFormat;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
 
 @SpringBootTest(classes = {AisApplication.class})
@@ -50,7 +45,7 @@ public class SimpleMqTest {
     }
 
     Map<String, Integer> queueInfo = new HashMap<String, Integer>(){{
-        put("com.cai.print1",10);
+        put("com.cai.print1.alone",10);
     }};
 
     ConnectionFactory connectionFactory;
@@ -82,6 +77,8 @@ public class SimpleMqTest {
 
     static class QueueChannelMap {
 
+        static Random random = new Random();
+
         Map<String, List<Channel>> aloneChannels;
 
         Connection target;
@@ -96,10 +93,22 @@ public class SimpleMqTest {
                 Channel channel;
                 List<Channel> channels = new ArrayList<>();
                 for (int i = 0 ; i < count ; i++){
-                    channels.add(channel = target.createChannel(1));
+                    channels.add(channel = target.createChannel());
                     channel.exchangeDeclare(queue, BuiltinExchangeType.DIRECT);
                     channel.queueDeclare(queue, true, true,false, null);
                     channel.exchangeBind(queue, queue, queue);
+                    channel.queueBind(queue,queue,queue);
+                    Consumer consumer = new DefaultConsumer(channel){
+                        @Override
+                        public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+                            System.out.println(MessageFormat.format("consumerTag: {0}", consumerTag));
+                            System.out.println(new String(body));
+                        }
+
+                    };
+                    channel.basicQos(1);
+                    channel.basicConsume(queue, consumer);
+
                 }
                 aloneChannels.put(queue, channels);
             } catch (IOException e) {
@@ -108,14 +117,18 @@ public class SimpleMqTest {
         }
 
         public Channel findChannel(String queue){
-//            return aloneChannels.getOrDefault(queue, null);
-            return null;
+            return getChannel(aloneChannels.get(queue));
+        }
+
+        static Channel getChannel(List<Channel> channels){
+            return channels.get(random.nextInt(channels.size()));
         }
     }
 
     @Test
     public void aloneTest() throws IOException {
         String message = "test-test";
-        qcMap.findChannel("com.cai.print1").basicPublish("com.cai.print1","com.cai.print1", null, message.getBytes(StandardCharsets.UTF_8));
+        qcMap.findChannel("com.cai.print1.alone").basicPublish("com.cai.print1.alone","com.cai.print1.alone", null, message.getBytes(StandardCharsets.UTF_8));
+//        while (true){}
     }
 }
