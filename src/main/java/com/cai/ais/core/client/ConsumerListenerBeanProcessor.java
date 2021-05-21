@@ -56,7 +56,7 @@ public class ConsumerListenerBeanProcessor implements BeanPostProcessor {
                         ConsumerListener listener = bean.getClass().getAnnotation(ConsumerListener.class);
                         Map values = AnnotationUtils.getAnnotationAttributes(ConsumerListener.class,listener);
                         if(aisProperties.getAloneQueue().containsKey((String) values.get("queue"))){
-                            addQueueNames((String) values.get("queue"));
+//                            addQueueNames((String) values.get("queue"));
                             addQueueToObjectItem((String) values.get("queue"), bean);
                             return bean;
                         }
@@ -65,7 +65,7 @@ public class ConsumerListenerBeanProcessor implements BeanPostProcessor {
                         TopicConsumerListener listener = bean.getClass().getAnnotation(TopicConsumerListener.class);
                         Map values = AnnotationUtils.getAnnotationAttributes(TopicConsumerListener.class,listener);
                         if(aisProperties.getAloneQueue().containsKey((String) values.get("queue"))){
-                            addQueueNames((String) values.get("queue"));
+//                            addQueueNames((String) values.get("queue"));
                             addQueueToObjectItem((String) values.get("queue"), bean);
                             return bean;
                         }

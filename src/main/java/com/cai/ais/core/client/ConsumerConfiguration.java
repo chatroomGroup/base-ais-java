@@ -49,6 +49,10 @@ public class ConsumerConfiguration {
     @Autowired
     AisProperties aisProperties;
 
+    @Autowired
+    ConsumerConfiguration consumerConfiguration;
+
+
     static String CONSUMER_METHOD_NAME = "process";
     @Bean
     public SimpleMessageListenerContainer listenerContainer(MessageListenerAdapter listenerAdapter) {
@@ -78,7 +82,7 @@ public class ConsumerConfiguration {
     AloneQueueRegistrar aloneQueueRegistrar(@Autowired AmqpAdmin amqpAdmin){
         Map<String,Long> aq = aisProperties.getAloneQueue();
         Connection aloneConnect = connectionFactory.createConnection();
-        AloneQueueRegistrar aqReg = new AloneQueueRegistrar(new QueueChannelMap(aloneConnect));
+        AloneQueueRegistrar aqReg = new AloneQueueRegistrar(new QueueChannelMap(aloneConnect,consumerConfiguration));
         aq.forEach((k,v)->{
             try {
                 aqReg.register(k, Math.toIntExact(v));
@@ -103,7 +107,7 @@ public class ConsumerConfiguration {
 
 
     @Deprecated
-    private Object bytesToObject(byte[] bytes) throws IOException {
+    public Object bytesToObject(byte[] bytes) throws IOException {
         Object obj = null;
         try {
             ByteArrayInputStream bis = new ByteArrayInputStream (bytes);
@@ -121,5 +125,9 @@ public class ConsumerConfiguration {
 
     public void addQueueToObjectItem(String queueName, Object o) {
         this.queueToObject.putIfAbsent(queueName,o);
+    }
+
+    public ConcurrentMap<String, Object> getQueueToObject() {
+        return queueToObject;
     }
 }

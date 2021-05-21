@@ -14,35 +14,37 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
-@SpringBootTest(classes = {AisApplication.class})
+//@SpringBootTest(classes = {AisApplication.class})
 @RunWith(SpringJUnit4ClassRunner.class)
 public class SimpleMqTest {
     Logger log = LoggerFactory.getLogger(SimpleMqTest.class);
-    @Autowired
-    AisSend aisSend;
-
-    @Test
-    public void fanoutTest(){
-        AisMessage message = new AisMessage<String>();
-        message.setBody("123");
-//        aisSend.send(message,"com.reply.fanout");
-        Object rs = aisSend.sendAndReceive(message,"com.generate.fanout");
-        System.out.println("re: "+rs);
-    }
-
-    @Test
-    public void topicTest(){
-        AisMessage message = new AisMessage<String>();
-        message.setBody("topic123 ");
-        aisSend.send(message,"com.customer.topic","erp.log.error");
-    }
+//    @Autowired
+//    AisSend aisSend;
+//
+//    @Test
+//    public void fanoutTest(){
+//        AisMessage message = new AisMessage<String>();
+//        message.setBody("123");
+////        aisSend.send(message,"com.reply.fanout");
+//        Object rs = aisSend.sendAndReceive(message,"com.generate.fanout");
+//        System.out.println("re: "+rs);
+//    }
+//
+//    @Test
+//    public void topicTest(){
+//        AisMessage message = new AisMessage<String>();
+//        message.setBody("topic123 ");
+//        aisSend.send(message,"com.customer.topic","erp.log.error");
+//    }
 
     Map<String, Integer> queueInfo = new HashMap<String, Integer>(){{
         put("com.cai.print1.alone",10);
@@ -55,7 +57,7 @@ public class SimpleMqTest {
     @Before
     public void before() throws IOException, TimeoutException {
         createConnectionFactory();
-        loadAloneChannel(connectionFactory);
+//        loadAloneChannel(connectionFactory);
     }
 
 
@@ -65,7 +67,7 @@ public class SimpleMqTest {
         connectionFactory.setPort(5672);
         connectionFactory.setUsername("guest");
         connectionFactory.setPassword("guest");
-        connectionFactory.setVirtualHost("/cr-3");
+        connectionFactory.setVirtualHost("/alone-3");
     }
 
     void loadAloneChannel(ConnectionFactory connectionFactory) throws IOException, TimeoutException {
@@ -126,9 +128,37 @@ public class SimpleMqTest {
     }
 
     @Test
-    public void aloneTest() throws IOException {
-        String message = "test-test";
-        qcMap.findChannel("com.cai.print1.alone").basicPublish("com.cai.print1.alone","com.cai.print1.alone", null, message.getBytes(StandardCharsets.UTF_8));
-//        while (true){}
+    public void aloneTest() throws IOException, InterruptedException, TimeoutException {
+//        String message = "test-test";
+//        qcMap.findChannel("com.cai.print1.alone").basicPublish("com.cai.print1.alone","com.cai.print1.alone", null, message.getBytes(StandardCharsets.UTF_8));
+////        while (true){}
+//        CountDownLatch latch = new CountDownLatch(200001);
+        Channel channel = connectionFactory.newConnection().createChannel();
+        for (int i = 0 ; i < 50; i++){
+            AisMessage message = new AisMessage<String>();
+            message.setBody("topic123 :" + i);
+            channel.basicPublish("com.cai.alone.queue","com.cai.alone.queue",null,toByteArray(message));
+        }
+        Thread.sleep(100000L);
+    }
+    /**
+     * 对象转数组
+     * @param obj
+     * @return
+     */
+    public static byte[] toByteArray (Object obj) {
+        byte[] bytes = null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(bos);
+            oos.writeObject(obj);
+            oos.flush();
+            bytes = bos.toByteArray ();
+            oos.close();
+            bos.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return bytes;
     }
 }

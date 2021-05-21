@@ -11,7 +11,8 @@ public class AloneQueueConsumer extends AisService<AisMessage<String>> {
     static AtomicInteger v = new AtomicInteger(1);
     @Override
     public Object process(AisMessage<String> msg) {
-        System.out.println(msg.getBody()+v.incrementAndGet());
-        return String.valueOf(msg.getBody()+v.incrementAndGet());
+        System.out.println(msg.getBody());
+        return null;
+//        return String.valueOf(msg.getBody()+v.incrementAndGet());
     }
 }
