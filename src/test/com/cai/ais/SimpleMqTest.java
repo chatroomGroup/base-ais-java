@@ -3,6 +3,7 @@ package com.cai.ais;
 import com.cai.ais.AisApplication;
 import com.cai.ais.config.AisMessage;
 import com.cai.ais.core.send.AisSend;
+import com.cai.ais.utils.NackMessage;
 import com.rabbitmq.client.*;
 import com.rabbitmq.client.impl.ChannelN;
 import org.junit.Before;
@@ -134,9 +135,28 @@ public class SimpleMqTest {
 ////        while (true){}
 //        CountDownLatch latch = new CountDownLatch(200001);
         Channel channel = connectionFactory.newConnection().createChannel();
+        List<NackMessage> nms = new LinkedList<>();
         for (int i = 0 ; i < 50; i++){
             AisMessage message = new AisMessage<String>();
             message.setBody("topic123 :" + i);
+            channel.addConfirmListener(new ConfirmCallback() {
+                @Override
+                public void handle(long deliveryTag, boolean multiple) throws IOException {
+                    System.out.println(MessageFormat.format("{0} : {1} ack",deliveryTag, multiple));
+                }
+            }, new ConfirmCallback() {
+                @Override
+                public void handle(long deliveryTag, boolean multiple) throws IOException {
+                    nms.add(new NackMessage(message, "com.cai.alone.queue", "com.cai.alone.queue"));
+                    System.out.println(MessageFormat.format("{0} : {1} nack",deliveryTag, multiple));
+                }
+            });
+
+            channel.addReturnListener((replyCode, replyText, exchange, routingKey, properties, body) -> {
+               channel.exchangeDeclare(exchange,BuiltinExchangeType.DIRECT);
+               channel.exchangeBind("com.cai.alone.queue","com.cai.alone.queue","com.cai.alone.queue");
+               channel.basicPublish("com.cai.alone.queue","com.cai.alone.queue",null,body);
+            });
             channel.basicPublish("com.cai.alone.queue","com.cai.alone.queue",null,toByteArray(message));
         }
         Thread.sleep(100000L);

@@ -90,6 +90,9 @@ public class ConsumerConfiguration {
                 e.printStackTrace();
             }
         });
+        aqReg.getQueueChannelMap().getConsumerProcessProxyMap().forEach((k,v)->{
+            v.createChannel();
+        });
         return aqReg;
     }
 
