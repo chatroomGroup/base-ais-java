@@ -49,10 +49,6 @@ public class ConsumerConfiguration {
     @Autowired
     AisProperties aisProperties;
 
-    @Autowired
-    ConsumerConfiguration consumerConfiguration;
-
-
     static String CONSUMER_METHOD_NAME = "process";
     @Bean
     public SimpleMessageListenerContainer listenerContainer(MessageListenerAdapter listenerAdapter) {
@@ -82,7 +78,7 @@ public class ConsumerConfiguration {
     AloneQueueRegistrar aloneQueueRegistrar(@Autowired AmqpAdmin amqpAdmin){
         Map<String,Long> aq = aisProperties.getAloneQueue();
         Connection aloneConnect = connectionFactory.createConnection();
-        AloneQueueRegistrar aqReg = new AloneQueueRegistrar(new QueueChannelMap(aloneConnect,consumerConfiguration));
+        AloneQueueRegistrar aqReg = new AloneQueueRegistrar(new QueueChannelMap(aloneConnect,this));
         aq.forEach((k,v)->{
             try {
                 aqReg.register(k, Math.toIntExact(v));

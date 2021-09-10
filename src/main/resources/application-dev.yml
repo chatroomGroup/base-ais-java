@@ -54,7 +54,7 @@ ais.mq:
   password: guest
   concurrency: 10
   maxConcurrency: 10
-  virtualHost: /alone
+  virtualHost: /alone-3
   aloneQueue:
-    'com.cai.alone.queue': 10
+    'com.cai.alone.queue': 100
     'com.cai.alone.queue2': 5

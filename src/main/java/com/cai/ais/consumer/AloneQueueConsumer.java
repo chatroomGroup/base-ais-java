@@ -12,6 +12,11 @@ public class AloneQueueConsumer extends AisService<AisMessage<String>> {
     @Override
     public Object process(AisMessage<String> msg) {
         System.out.println(msg.getBody());
+        try {
+            Thread.sleep(10000L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return null;
 //        return String.valueOf(msg.getBody()+v.incrementAndGet());
     }
