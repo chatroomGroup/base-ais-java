@@ -99,8 +99,9 @@ public class ConsumerConfiguration {
 
     @Bean
     @Scope("prototype")
-    public MessageListenerAdapter listenerAdapterContainer(){
+    public MessageListenerAdapter listenerAdapterContainer(MessageConverter converter){
         MessageListenerAdapter adapter = new MessageListenerAdapter();
+        adapter.setMessageConverter(converter);
         return adapter;
     }
 
