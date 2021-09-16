@@ -20,6 +20,7 @@ import org.springframework.util.Assert;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +38,12 @@ public class ConsumerListenerBeanProcessor implements BeanPostProcessor {
 
     @Autowired
     AisProperties aisProperties;
+
+    private static Map<String, Object> arguments = new LinkedHashMap<>();
+
+    static {
+        arguments.put("x-dead-letter-exchange", "dlx.exchange");
+    }
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
@@ -105,7 +112,7 @@ public class ConsumerListenerBeanProcessor implements BeanPostProcessor {
         if (queueName.equals("")){
             queueName = QueueBuilder.nonDurable().build().getName();
         }
-        Queue queue = QueueBuilder.nonDurable(queueName).autoDelete().build();
+        Queue queue = QueueBuilder.nonDurable(queueName).withArguments(arguments).autoDelete().build();
         Exchange exchange = AisData.addAndReturnExchange(exchangeNameN,amqpAdmin,MessageExchangeType.FANOUT);
         amqpAdmin.declareQueue(queue);
         amqpAdmin.declareBinding(BindingBuilder
@@ -126,7 +133,7 @@ public class ConsumerListenerBeanProcessor implements BeanPostProcessor {
         if (queueName.equals("")){
             queueName = QueueBuilder.nonDurable().build().getName();
         }
-        Queue queue = QueueBuilder.nonDurable(queueName).autoDelete().build();
+        Queue queue = QueueBuilder.nonDurable(queueName).withArguments(arguments).autoDelete().build();
         Exchange exchange = AisData.addAndReturnExchange(exchangeNameN,amqpAdmin,MessageExchangeType.TOPIC);
         amqpAdmin.declareQueue(queue);
         amqpAdmin.declareBinding(BindingBuilder

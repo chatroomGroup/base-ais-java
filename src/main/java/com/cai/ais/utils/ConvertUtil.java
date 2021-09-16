@@ -1,10 +1,11 @@
 package com.cai.ais.utils;
 
+import com.cai.ais.config.AisMessage;
+import com.cai.ais.core.exception.AisException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 
 public class ConvertUtil {
 
@@ -28,5 +29,31 @@ public class ConvertUtil {
         oos.close();
         bos.close();
         return bytes;
+    }
+
+    public static Object bytesToObject(byte[] bytes) throws IOException, ClassNotFoundException {
+        Object obj = null;
+        ByteArrayInputStream bis = new ByteArrayInputStream (bytes);
+        ObjectInputStream ois = new ObjectInputStream (bis);
+        obj = ois.readObject();
+        ois.close();
+        bis.close();
+        return obj;
+    }
+
+    public static AisMessage bytesToAisMessage(byte[] body) throws AisException, JsonProcessingException {
+        AisMessage dlxMessage = new AisMessage();
+        try{
+            dlxMessage = (AisMessage) bytesToObject(body);
+        }catch (Throwable t){
+            if (t instanceof IOException)
+                dlxMessage = getJSON().readValue(new String(body), AisMessage.class);
+            else
+                t.printStackTrace();
+        }
+        if (dlxMessage == null){
+            throw new AisException("转换失败");
+        }
+        return dlxMessage;
     }
 }

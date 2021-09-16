@@ -12,6 +12,6 @@ public class IncrementAisConsumer extends AisService<AisMessage<String>> {
     @Override
     public Object process(AisMessage<String> msg) {
         System.out.println(msg.getBody()+v.incrementAndGet());
-        return String.valueOf(msg.getBody()+v.incrementAndGet());
+        return null;
     }
 }

@@ -1,15 +1,17 @@
 package com.cai.ais.config.dlx;
 
+import com.cai.ais.config.AisMessage;
 import com.cai.ais.config.ConsumerProcessProxy;
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.BuiltinExchangeType;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Envelope;
+import com.cai.ais.core.exception.AisException;
+import com.rabbitmq.client.*;
 import org.springframework.amqp.rabbit.connection.Connection;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -19,10 +21,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
+import static com.cai.ais.utils.ConvertUtil.*;
+
 /**
  * 死信队列的配置
  */
-@ConditionalOnBean(value = DLXConsumer.class)
 @Configuration
 public class DLXConfig {
 
@@ -38,14 +41,18 @@ public class DLXConfig {
 
     private List<Channel> channels = new ArrayList<>();
 
-    private static Map<String, Object> arguments = new LinkedHashMap<>();
+    @Autowired
+    ConnectionFactory connectionFactory;
 
-    static {
-        arguments.put("x-dead-letter-exchange", exchangeN);
+
+    @Bean
+    @ConditionalOnMissingBean(DLXConsumer.class)
+    DLXConsumer defaultDlxConsumer(){
+        return new DefaultDlxConsumer();
     }
 
     @Autowired
-    ConnectionFactory connectionFactory;
+    DLXConsumer consumer;
 
     @PostConstruct
     void init(){
@@ -53,14 +60,20 @@ public class DLXConfig {
         IntStream.of(channelCount).forEach(value -> {
             try {
                 channels.add(channel = connection.createChannel(false));
-                channel.queueDeclare(queueN,true,true,false,arguments);
+                channel.queueDeclare(queueN,true,true,false,null);
                 channel.exchangeDeclare(exchangeN, BuiltinExchangeType.TOPIC,true);
                 channel.queueBind(queueN,exchangeN,"#");
 
-                channel.basicConsume(queueN,new ConsumerProcessProxy.CustomerConsumer(){
+                channel.basicConsume(queueN,new DefaultConsumer(channel){
                     @Override
                     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
-                        super.handleDelivery(consumerTag, envelope, properties, body);
+                        AisMessage dlxMessage = null;
+                        try {
+                            dlxMessage = bytesToAisMessage(body);
+                        } catch (AisException e) {
+                            e.printStackTrace();
+                        }
+                        consumer.process(dlxMessage);
                     }
                 });
             } catch (IOException e) {

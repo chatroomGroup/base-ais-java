@@ -36,6 +36,11 @@ public class ConsumerProcessProxy<T extends AisService> implements ChannelCreato
 
     Connection connection;
 
+    private static Map<String, Object> arguments = new LinkedHashMap<>();
+
+    static {
+        arguments.put("x-dead-letter-exchange", "dlx.exchange");
+    }
 
     public ConsumerProcessProxy(T proxy,
                                 Connection connection,
@@ -86,7 +91,7 @@ public class ConsumerProcessProxy<T extends AisService> implements ChannelCreato
             for (int i = 0 ; i < channelNum ; i++){
                 channels.add(channel = connection.createChannel(false));
                 channel.exchangeDeclare(queue, type,false);
-                channel.queueDeclare(queue, true, false,false, null);
+                channel.queueDeclare(queue, true, false,false, arguments);
                 channel.exchangeBind(queue, queue, queue);
                 channel.queueBind(queue,queue,queue);
                 Consumer consumer = new CustomerConsumer<AisService<AisMessage>>(queue, proxy,  channel){
@@ -99,7 +104,7 @@ public class ConsumerProcessProxy<T extends AisService> implements ChannelCreato
                             e.printStackTrace();
                         }
                         log.info(MessageFormat.format("consumerTag: {0}", consumerTag));
-                        this.server.process((AisMessage) o);
+                        proxy.process((AisMessage) o);
                         log.info("消息处理成功");
                     }
 

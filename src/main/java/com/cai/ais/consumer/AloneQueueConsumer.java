@@ -13,7 +13,7 @@ public class AloneQueueConsumer extends AisService<AisMessage<String>> {
     public Object process(AisMessage<String> msg) {
         System.out.println(msg.getBody());
         try {
-            Thread.sleep(10000L);
+            Thread.sleep(10000000L);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
